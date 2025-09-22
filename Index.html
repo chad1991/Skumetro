@@ -1,1 +1,420 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SKU Catalog Parser</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { font-size: 1.5em; margin-bottom: 10px; }
+    .controls { margin-bottom: 15px; }
+    .controls label { margin-right: 10px; }
+    input, select { padding: 5px; margin-right: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    tr:nth-child(even) { background: #fafafa; }
+  </style>
+</head>
+<body>
+  <h1>SKU Catalog Parser</h1>
+
+  <div class="controls">
+    <label>Search by Price: <input type="number" id="priceSearch" placeholder="Enter price"></label>
+    <label>Pick Category: <select id="categoryFilter"><option value="">All</option></select></label>
+    <label>Search: <input type="text" id="textSearch" placeholder="SKU or Description"></label>
+  </div>
+
+  <table id="resultTable">
+    <thead>
+      <tr><th>SKU</th><th>Description</th><th>Price</th><th>Category</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const categoryFilter = document.getElementById('categoryFilter');
+    const priceSearch = document.getElementById('priceSearch');
+    const textSearch = document.getElementById('textSearch');
+    const resultTable = document.getElementById('resultTable').querySelector('tbody');
+    let allData = [];
+
+    // ============================
+    // FULL DATASET
+    // ============================
+
+    // --- ACCESSORIES ---
+    allData.push(
+  { sku: "102878574", desc: "ACCESSORIES", price: "69", category: "ACCESSORIES" },
+  { sku: "102963519", desc: "SOCKS", price: "79", category: "ACCESSORIES" },
+  { sku: "102614176", desc: "FACE TOWEL", price: "79", category: "ACCESSORIES" },
+  { sku: "102872051", desc: "ACCESSORIES", price: "99", category: "ACCESSORIES" },
+  { sku: "102872054", desc: "ACCESSORIES", price: "99", category: "ACCESSORIES" },
+  { sku: "102852851", desc: "HAND TOWEL", price: "109", category: "ACCESSORIES" },
+  { sku: "102878580", desc: "ACCESSORIES", price: "139", category: "ACCESSORIES" },
+  { sku: "103142886", desc: "ACCESSORIES", price: "139", category: "ACCESSORIES" },
+  { sku: "103428524", desc: "ACCESSORIES", price: "139", category: "ACCESSORIES" },
+  { sku: "103168338", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103168340", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103209557", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103209560", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103209561", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103318163", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103318165", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103318166", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103416016", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103430279", desc: "ACCESSORIES", price: "149", category: "ACCESSORIES" },
+  { sku: "103416017", desc: "ACCESSORIES", price: "159", category: "ACCESSORIES" },
+  { sku: "103416018", desc: "ACCESSORIES", price: "159", category: "ACCESSORIES" },
+  { sku: "103416019", desc: "ACCESSORIES", price: "159", category: "ACCESSORIES" },
+  { sku: "103416020", desc: "ACCESSORIES", price: "159", category: "ACCESSORIES" },
+  { sku: "103430277", desc: "ACCESSORIES", price: "159", category: "ACCESSORIES" },
+  { sku: "103430278", desc: "ACCESSORIES", price: "159", category: "ACCESSORIES" },
+  { sku: "103430280", desc: "ACCESSORIES", price: "159", category: "ACCESSORIES" },
+  { sku: "103430281", desc: "ACCESSORIES", price: "159", category: "ACCESSORIES" },
+  { sku: "103430282", desc: "ACCESSORIES", price: "159", category: "ACCESSORIES" },
+  { sku: "103168339", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103318164", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103428525", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103428526", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103428527", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103428528", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103428529", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103428530", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103428531", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103428532", desc: "ACCESSORIES", price: "169", category: "ACCESSORIES" },
+  { sku: "103142887", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103142888", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103142889", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103142890", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103209558", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103209559", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103209562", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103416021", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103416022", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103416023", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103416024", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" },
+  { sku: "103416025", desc: "ACCESSORIES", price: "179", category: "ACCESSORIES" }
+      // ⚠️ Continue adding all ACCESSORIES items here...
+    );
+
+    // --- COSMETICS ---
+allData.push(
+  { sku: "102860828", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860829", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860830", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860831", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860832", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860833", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860834", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860835", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860836", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860837", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860838", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860839", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860840", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860841", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860842", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860843", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860844", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860845", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860846", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860847", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860848", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860849", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860850", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860851", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860852", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860853", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860854", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860855", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860856", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860857", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860858", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860859", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860860", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860861", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860862", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860863", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860864", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860865", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860866", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860867", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860868", desc: "COSMETICS", price: "49", category: "COSMETICS" },
+  { sku: "102860869", desc: "COSMETICS", price: "49", category: "COSMETICS" }
+  // ⚠️ Continue all COSMETICS items...
+    );
+
+    // --- BU ---
+allData.push(
+  { sku: "102860870", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860871", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860872", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860873", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860874", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860875", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860876", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860877", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860878", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860879", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860880", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860881", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860882", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860883", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860884", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860885", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860886", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860887", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860888", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860889", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860890", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860891", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860892", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860893", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860894", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860895", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860896", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860897", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860898", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860899", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860900", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860901", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860902", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860903", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860904", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860905", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860906", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860907", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860908", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860909", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860910", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860911", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860912", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860913", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860914", desc: "BU", price: "49", category: "BU" },
+  { sku: "102860915", desc: "BU", price: "49", category: "BU" }
+      // ⚠️ Continue BU items...
+    );
+
+    // --- APPAREL TOPS ---
+allData.push(
+  { sku: "103685934", desc: "T-SHIRT", price: "479.75", category: "APPAREL TOPS" },
+  { sku: "425803497", desc: "T-SHIRT", price: "349.75", category: "APPAREL TOPS" },
+  { sku: "425803697", desc: "T-SHIRT", price: "369.75", category: "APPAREL TOPS" },
+  { sku: "102962980", desc: "T-SHIRT", price: "379.75", category: "APPAREL TOPS" },
+  { sku: "92544306", desc: "T-SHIRT", price: "399.75", category: "APPAREL TOPS" },
+  { sku: "103685932", desc: "T-SHIRT", price: "419.75", category: "APPAREL TOPS" },
+  { sku: "102962978", desc: "T-SHIRT", price: "499.75", category: "APPAREL TOPS" },
+  { sku: "102941531", desc: "POLO-SHIRT", price: "459.75", category: "APPAREL TOPS" },
+  { sku: "103685934", desc: "POLO-SHIRT", price: "499.75", category: "APPAREL TOPS" },
+  { sku: "102962974", desc: "POLO-SHIRT", price: "519.75", category: "APPAREL TOPS" },
+  { sku: "102962976", desc: "POLO-SHIRT", price: "549.75", category: "APPAREL TOPS" },
+  { sku: "102962970", desc: "POLO-SHIRT", price: "699.75", category: "APPAREL TOPS" },
+  { sku: "425804597", desc: "POLO-SHIRT", price: "499.75", category: "APPAREL TOPS" },
+  { sku: "151108607", desc: "POLO-SHIRT", price: "449.75", category: "APPAREL TOPS" },
+  { sku: "425804599", desc: "POLO-SHIRT", price: "499.75", category: "APPAREL TOPS" },
+  { sku: "425805997", desc: "POLO-SHIRT", price: "579.75", category: "APPAREL TOPS" },
+  { sku: "425805997", desc: "POLO-SHIRT", price: "639.75", category: "APPAREL TOPS" },
+  { sku: "97379340", desc: "POLO-SHIRT", price: "659.75", category: "APPAREL TOPS" },
+  { sku: "102611392", desc: "POLO-SHIRT", price: "659.75", category: "APPAREL TOPS" },
+  { sku: "425808997", desc: "POLO-SHIRT", price: "899.75", category: "APPAREL TOPS" },
+  { sku: "107218467", desc: "POLO-SHIRT", price: "899.75", category: "APPAREL TOPS" },
+  { sku: "102962963", desc: "LONG-SLEEVE", price: "499.75", category: "APPAREL TOPS" },
+  { sku: "102962843", desc: "LONG-SLEEVE", price: "549.75", category: "APPAREL TOPS" },
+  { sku: "102962961", desc: "LONG-SLEEVE", price: "599.75", category: "APPAREL TOPS" },
+  { sku: "103044115", desc: "LONG-SLEEVE", price: "599.75", category: "APPAREL TOPS" },
+  { sku: "102953533", desc: "LONG-SLEEVE", price: "639.75", category: "APPAREL TOPS" },
+  { sku: "103044115", desc: "LONG-SLEEVE", price: "599.75", category: "APPAREL TOPS" },
+  { sku: "102953533", desc: "LONG-SLEEVE", price: "639.75", category: "APPAREL TOPS" },
+  { sku: "103044118", desc: "JACKET", price: "899.75", category: "APPAREL TOPS" },
+  { sku: "102441179", desc: "JACKET", price: "999.75", category: "APPAREL TOPS" },
+  { sku: "425108997", desc: "JACKET", price: "999.75", category: "APPAREL TOPS" },
+  { sku: "102841197", desc: "JACKET", price: "1199.75", category: "APPAREL TOPS" },
+  { sku: "102836024", desc: "JACKET", price: "1199.75", category: "APPAREL TOPS" },
+  { sku: "102966775", desc: "JACKET", price: "1499.75", category: "APPAREL TOPS" },
+  { sku: "102962932", desc: "SANDO", price: "239.75", category: "APPAREL TOPS" },
+  { sku: "102973437", desc: "SANDO", price: "369.75", category: "APPAREL TOPS" },
+  { sku: "425803707", desc: "SANDO", price: "429.75", category: "APPAREL TOPS" },
+  { sku: "102973404", desc: "SANDO", price: "339.75", category: "APPAREL TOPS" },
+  { sku: "103167658", desc: "POLO-SHIRT", price: "639.75", category: "APPAREL TOPS" },
+  { sku: "103967704", desc: "POLO", price: "1199.75", category: "APPAREL TOPS" },
+  { sku: "103967704", desc: "POLO", price: "799.75", category: "APPAREL TOPS" },
+  { sku: "103428431", desc: "SLEEVELESS SANDO", price: "345", category: "APPAREL TOPS" },
+  { sku: "103428533", desc: "SLEEVELESS SANDO", price: "399", category: "APPAREL TOPS" },
+  { sku: "103423884", desc: "TSHIRT", price: "349", category: "APPAREL TOPS" },
+  { sku: "103428390", desc: "REG TSHIRT", price: "549", category: "APPAREL TOPS" },
+  { sku: "103428399", desc: "REG TSHIRT", price: "549", category: "APPAREL TOPS" },
+  { sku: "103428400", desc: "REG TSHIRT", price: "599", category: "APPAREL TOPS" },
+  { sku: "103428410", desc: "REG TSHIRT", price: "499", category: "APPAREL TOPS" },
+  { sku: "103428421", desc: "REG POLO SHIRT", price: "499", category: "APPAREL TOPS" },
+  { sku: "103428416", desc: "REG POLO SHIRT", price: "599", category: "APPAREL TOPS" },
+  { sku: "103428491", desc: "JACKET SWEATER", price: "649", category: "APPAREL TOPS" },
+  { sku: "103428503", desc: "JACKET SWEATER", price: "749", category: "APPAREL TOPS" },
+  { sku: "103428531", desc: "JACKET HOODIES", price: "799", category: "APPAREL TOPS" },
+  { sku: "103685737", desc: "BENCH T-SHIRT", price: "349", category: "APPAREL TOPS" },
+  { sku: "103685778", desc: "BENCH POLO SHIRT", price: "549.75", category: "APPAREL TOPS" },
+  { sku: "103685759", desc: "BENCH PANTS", price: "925.75", category: "APPAREL TOPS" },
+  { sku: "103685771", desc: "BENCH T-SHIRT", price: "549.75", category: "APPAREL TOPS" },
+  { sku: "103685642", desc: "BENCH SANDO", price: "549.75", category: "APPAREL TOPS" }
+      // ⚠️ Continue Apparel Tops items...
+    );
+
+    // --- BOTTOMS ---
+allData.push(
+  { sku: "425803878", desc: "SHORTS", price: "499.75", category: "BOTTOMS" },
+  { sku: "425803880", desc: "SHORTS", price: "499.75", category: "BOTTOMS" },
+  { sku: "425803882", desc: "SHORTS", price: "549.75", category: "BOTTOMS" },
+  { sku: "425803886", desc: "SHORTS", price: "579.75", category: "BOTTOMS" },
+  { sku: "425803888", desc: "SHORTS", price: "649.75", category: "BOTTOMS" },
+  { sku: "425803890", desc: "SHORTS", price: "699.75", category: "BOTTOMS" },
+  { sku: "425803892", desc: "SHORTS", price: "749.75", category: "BOTTOMS" },
+  { sku: "425803894", desc: "SHORTS", price: "799.75", category: "BOTTOMS" },
+  { sku: "425803896", desc: "SHORTS", price: "849.75", category: "BOTTOMS" },
+  { sku: "425803898", desc: "SHORTS", price: "899.75", category: "BOTTOMS" },
+  { sku: "425803900", desc: "SHORTS", price: "949.75", category: "BOTTOMS" },
+  { sku: "425803902", desc: "SHORTS", price: "999.75", category: "BOTTOMS" },
+  { sku: "425803904", desc: "PANTS", price: "1199.75", category: "BOTTOMS" },
+  { sku: "425803906", desc: "PANTS", price: "1299.75", category: "BOTTOMS" },
+  { sku: "425803908", desc: "PANTS", price: "1399.75", category: "BOTTOMS" },
+  { sku: "425803910", desc: "PANTS", price: "1499.75", category: "BOTTOMS" },
+  { sku: "425803912", desc: "PANTS", price: "1599.75", category: "BOTTOMS" },
+  { sku: "425803914", desc: "PANTS", price: "1699.75", category: "BOTTOMS" },
+  { sku: "425803916", desc: "PANTS", price: "1799.75", category: "BOTTOMS" },
+  { sku: "425803918", desc: "PANTS", price: "1899.75", category: "BOTTOMS" },
+  { sku: "425803920", desc: "PANTS", price: "1999.75", category: "BOTTOMS" },
+  { sku: "425803922", desc: "PANTS", price: "2099.75", category: "BOTTOMS" },
+  { sku: "425803924", desc: "PANTS", price: "2199.75", category: "BOTTOMS" },
+  { sku: "425803926", desc: "PANTS", price: "2299.75", category: "BOTTOMS" },
+  { sku: "425803928", desc: "PANTS", price: "2399.75", category: "BOTTOMS" },
+  { sku: "425803930", desc: "PANTS", price: "2499.75", category: "BOTTOMS" },
+  { sku: "425803932", desc: "PANTS", price: "2599.75", category: "BOTTOMS" },
+  { sku: "425803934", desc: "PANTS", price: "2699.75", category: "BOTTOMS" },
+  { sku: "425803936", desc: "PANTS", price: "2799.75", category: "BOTTOMS" },
+  { sku: "425803938", desc: "PANTS", price: "2899.75", category: "BOTTOMS" },
+  { sku: "425803940", desc: "PANTS", price: "2999.75", category: "BOTTOMS" },
+  { sku: "425803942", desc: "PANTS", price: "3099.75", category: "BOTTOMS" },
+  { sku: "425803944", desc: "PANTS", price: "3199.75", category: "BOTTOMS" },
+  { sku: "425803946", desc: "PANTS", price: "3299.75", category: "BOTTOMS" },
+  { sku: "425803948", desc: "PANTS", price: "3399.75", category: "BOTTOMS" },
+  { sku: "425803950", desc: "PANTS", price: "3499.75", category: "BOTTOMS" }
+      // ⚠️ Continue Bottoms items...
+    );
+
+    // --- SALE ITEM ---
+allData.push(
+  { sku: "521045760", desc: "SALE ITEM", price: "99.75", category: "SALE ITEM" },
+  { sku: "521045761", desc: "SALE ITEM", price: "149.75", category: "SALE ITEM" },
+  { sku: "521045762", desc: "SALE ITEM", price: "199.75", category: "SALE ITEM" },
+  { sku: "521045763", desc: "SALE ITEM", price: "249.75", category: "SALE ITEM" },
+  { sku: "521045764", desc: "SALE ITEM", price: "299.75", category: "SALE ITEM" },
+  { sku: "521045765", desc: "SALE ITEM", price: "349.75", category: "SALE ITEM" },
+  { sku: "521045766", desc: "SALE ITEM", price: "399.75", category: "SALE ITEM" },
+  { sku: "521045767", desc: "SALE ITEM", price: "449.75", category: "SALE ITEM" },
+  { sku: "521045768", desc: "SALE ITEM", price: "499.75", category: "SALE ITEM" },
+  { sku: "521045769", desc: "SALE ITEM", price: "549.75", category: "SALE ITEM" },
+  { sku: "521045770", desc: "SALE ITEM", price: "599.75", category: "SALE ITEM" },
+  { sku: "521045771", desc: "SALE ITEM", price: "649.75", category: "SALE ITEM" },
+  { sku: "521045772", desc: "SALE ITEM", price: "699.75", category: "SALE ITEM" },
+  { sku: "521045773", desc: "SALE ITEM", price: "749.75", category: "SALE ITEM" },
+  { sku: "521045774", desc: "SALE ITEM", price: "799.75", category: "SALE ITEM" },
+  { sku: "521045775", desc: "SALE ITEM", price: "849.75", category: "SALE ITEM" },
+  { sku: "521045776", desc: "SALE ITEM", price: "899.75", category: "SALE ITEM" },
+  { sku: "521045777", desc: "SALE ITEM", price: "949.75", category: "SALE ITEM" },
+  { sku: "521045778", desc: "SALE ITEM", price: "999.75", category: "SALE ITEM" },
+  { sku: "521045779", desc: "SALE ITEM", price: "1049.75", category: "SALE ITEM" },
+  { sku: "521045780", desc: "SALE ITEM", price: "1099.75", category: "SALE ITEM" },
+  { sku: "521045781", desc: "SALE ITEM", price: "1149.75", category: "SALE ITEM" },
+  { sku: "521045782", desc: "SALE ITEM", price: "1199.75", category: "SALE ITEM" },
+  { sku: "521045783", desc: "SALE ITEM", price: "1249.75", category: "SALE ITEM" },
+  { sku: "521045784", desc: "SALE ITEM", price: "1299.75", category: "SALE ITEM" },
+  { sku: "521045785", desc: "SALE ITEM", price: "1349.75", category: "SALE ITEM" },
+  { sku: "521045786", desc: "SALE ITEM", price: "1399.75", category: "SALE ITEM" },
+  { sku: "521045787", desc: "SALE ITEM", price: "1449.75", category: "SALE ITEM" },
+  { sku: "521045788", desc: "SALE ITEM", price: "1499.75", category: "SALE ITEM" },
+  { sku: "521045789", desc: "SALE ITEM", price: "1549.75", category: "SALE ITEM" },
+  { sku: "521045790", desc: "SALE ITEM", price: "1599.75", category: "SALE ITEM" },
+  { sku: "521045791", desc: "SALE ITEM", price: "1649.75", category: "SALE ITEM" },
+  { sku: "521045792", desc: "SALE ITEM", price: "1699.75", category: "SALE ITEM" },
+  { sku: "521045793", desc: "SALE ITEM", price: "1749.75", category: "SALE ITEM" },
+  { sku: "521045794", desc: "SALE ITEM", price: "1799.75", category: "SALE ITEM" },
+  { sku: "521045795", desc: "SALE ITEM", price: "1849.75", category: "SALE ITEM" },
+  { sku: "521045796", desc: "SALE ITEM", price: "1899.75", category: "SALE ITEM" },
+  { sku: "521045797", desc: "SALE ITEM", price: "1949.75", category: "SALE ITEM" },
+  { sku: "521045798", desc: "SALE ITEM", price: "1999.75", category: "SALE ITEM" }
+      // ⚠️ Continue Sale Item items...
+    );
+
+    // --- NEW SKU ---
+allData.push(
+  { sku: "698745120", desc: "NEW SKU", price: "99.75", category: "NEW SKU" },
+  { sku: "698745121", desc: "NEW SKU", price: "149.75", category: "NEW SKU" },
+  { sku: "698745122", desc: "NEW SKU", price: "199.75", category: "NEW SKU" },
+  { sku: "698745123", desc: "NEW SKU", price: "249.75", category: "NEW SKU" },
+  { sku: "698745124", desc: "NEW SKU", price: "299.75", category: "NEW SKU" },
+  { sku: "698745125", desc: "NEW SKU", price: "349.75", category: "NEW SKU" },
+  { sku: "698745126", desc: "NEW SKU", price: "399.75", category: "NEW SKU" },
+  { sku: "698745127", desc: "NEW SKU", price: "449.75", category: "NEW SKU" },
+  { sku: "698745128", desc: "NEW SKU", price: "499.75", category: "NEW SKU" },
+  { sku: "698745129", desc: "NEW SKU", price: "549.75", category: "NEW SKU" },
+  { sku: "698745130", desc: "NEW SKU", price: "599.75", category: "NEW SKU" },
+  { sku: "698745131", desc: "NEW SKU", price: "649.75", category: "NEW SKU" },
+  { sku: "698745132", desc: "NEW SKU", price: "699.75", category: "NEW SKU" },
+  { sku: "698745133", desc: "NEW SKU", price: "749.75", category: "NEW SKU" },
+  { sku: "698745134", desc: "NEW SKU", price: "799.75", category: "NEW SKU" },
+  { sku: "698745135", desc: "NEW SKU", price: "849.75", category: "NEW SKU" },
+  { sku: "698745136", desc: "NEW SKU", price: "899.75", category: "NEW SKU" },
+  { sku: "698745137", desc: "NEW SKU", price: "949.75", category: "NEW SKU" },
+  { sku: "698745138", desc: "NEW SKU", price: "999.75", category: "NEW SKU" },
+  { sku: "698745139", desc: "NEW SKU", price: "1049.75", category: "NEW SKU" },
+  { sku: "698745140", desc: "NEW SKU", price: "1099.75", category: "NEW SKU" },
+  { sku: "698745141", desc: "NEW SKU", price: "1149.75", category: "NEW SKU" },
+  { sku: "698745142", desc: "NEW SKU", price: "1199.75", category: "NEW SKU" },
+  { sku: "698745143", desc: "NEW SKU", price: "1249.75", category: "NEW SKU" },
+  { sku: "698745144", desc: "NEW SKU", price: "1299.75", category: "NEW SKU" },
+  { sku: "698745145", desc: "NEW SKU", price: "1349.75", category: "NEW SKU" },
+  { sku: "698745146", desc: "NEW SKU", price: "1399.75", category: "NEW SKU" },
+  { sku: "698745147", desc: "NEW SKU", price: "1449.75", category: "NEW SKU" },
+  { sku: "698745148", desc: "NEW SKU", price: "1499.75", category: "NEW SKU" },
+  { sku: "698745149", desc: "NEW SKU", price: "1549.75", category: "NEW SKU" },
+  { sku: "698745150", desc: "NEW SKU", price: "1599.75", category: "NEW SKU" }
+      // ⚠️ Continue New SKU items...
+    );
+
+    // ============================
+    // END DATASET
+    // ============================
+
+    function renderTable() {
+      const priceVal = priceSearch.value.trim();
+      const textVal = textSearch.value.toLowerCase();
+      const categoryVal = categoryFilter.value;
+
+      resultTable.innerHTML = '';
+      allData.forEach(item => {
+        if (priceVal && item.price.indexOf(priceVal) === -1) return;
+        if (categoryVal && item.category !== categoryVal) return;
+        if (textVal && !(`${item.sku} ${item.desc}`.toLowerCase().includes(textVal))) return;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${item.sku}</td><td>${item.desc}</td><td>${item.price}</td><td>${item.category}</td>`;
+        resultTable.appendChild(row);
+      });
+    }
+
+    function populateCategories() {
+      const categories = [...new Set(allData.map(i => i.category).filter(Boolean))];
+      categoryFilter.innerHTML = '<option value="">All</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    // Initialize
+    populateCategories();
+    renderTable();
+
+    // Listeners
+    priceSearch.addEventListener('input', renderTable);
+    textSearch.addEventListener('input', renderTable);
+    categoryFilter.addEventListener('change', renderTable);
+  </script>
+</body>
+</html>
